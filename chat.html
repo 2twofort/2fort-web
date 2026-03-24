@@ -434,15 +434,7 @@
     gap: 6px;
   }
 
-  .user-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
-
-  .user-avatar {
+.user-avatar {
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -825,7 +817,6 @@ socket.on('users_update', (users) => {
     el.innerHTML = `
       <div class="user-item-top">
         <div class="user-avatar">${avatarHtml}</div>
-        <div class="user-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-left:-4px;margin-bottom:-8px;align-self:flex-end;"></div>
         <span class="user-name">${esc(u.discordTag)}</span>
         ${roleBadge}
       </div>
