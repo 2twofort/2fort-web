@@ -229,6 +229,14 @@
     color: var(--accent);
     flex-shrink: 0;
     margin-top: 1px;
+    overflow: hidden;
+  }
+
+  .msg-avatar img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .msg-body { flex: 1; min-width: 0; }
@@ -415,6 +423,28 @@
     border-radius: 50%;
     background: var(--accent);
     flex-shrink: 0;
+  }
+
+  .user-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .user-name {
@@ -704,6 +734,9 @@ function appendMsg(msg) {
 
   const initial = (msg.fromTag || '?')[0].toUpperCase();
   const time    = new Date(msg.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const avatarHtml = msg.avatar
+    ? `<img src="${esc(msg.avatar)}" alt="" onerror="this.parentElement.innerHTML='${initial}'">`
+    : initial;
 
   const roleBadge = (msg.role && msg.role !== 'member')
     ? `<span class="role-badge role-${msg.role}">${esc(msg.role)}</span>` : '';
@@ -720,7 +753,7 @@ function appendMsg(msg) {
   }
 
   el.innerHTML = `
-    <div class="msg-avatar">${initial}</div>
+    <div class="msg-avatar">${avatarHtml}</div>
     <div class="msg-body">
       <div class="msg-meta">
         <span class="msg-author">${esc(msg.fromTag)}</span>
@@ -763,9 +796,14 @@ socket.on('users_update', (users) => {
     el.className = 'user-item';
     const roleBadge = (u.role && u.role !== 'member')
       ? `<span class="user-role-badge role-badge role-${u.role}">${esc(u.role)}</span>` : '';
+    const initial = (u.discordTag || '?')[0].toUpperCase();
+    const avatarHtml = u.avatar
+      ? `<img src="${esc(u.avatar)}" alt="" onerror="this.parentElement.innerHTML='${initial}'">`
+      : initial;
     el.innerHTML = `
       <div class="user-item-top">
-        <div class="user-dot"></div>
+        <div class="user-avatar">${avatarHtml}</div>
+        <div class="user-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-left:-4px;margin-bottom:-8px;align-self:flex-end;"></div>
         <span class="user-name">${esc(u.discordTag)}</span>
         ${roleBadge}
       </div>
@@ -917,9 +955,22 @@ async function cipherDecrypt() {
 }
 
 async function cipherCopy(id, btn) {
-  await navigator.clipboard.writeText(document.getElementById(id).textContent);
+  const text = document.getElementById(id).textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch(e) {
+    // Fallback for iframe/blocked clipboard contexts
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
   btn.textContent = 'Copied!';
-  btn.style.color = 'var(--success, #5a9e5a)';
+  btn.style.color = 'var(--accent)';
   setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = 'var(--muted)'; }, 2000);
 }
 </script>
