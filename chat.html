@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>2Fort Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
   :root {
     --bg:        #1a1008;
@@ -590,8 +591,8 @@
       <span class="channel-name"># general</span>
       <div class="spacer"></div>
       <div class="me-info">
-        <button onclick="openModal('cipher-modal')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔒 Cipher</button>
-        <button id="clear-chat-btn" onclick="clearChat()" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🗑 Clear</button>
+        <button onclick="openModal('cipher-modal')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fa-solid fa-lock" style="font-size:10px;"></i> Cipher</button>
+        <button id="clear-chat-btn" onclick="clearChat()" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fa-solid fa-trash" style="font-size:10px;"></i> Clear</button>
         <button id="hide-email-btn" onclick="toggleHideEmail()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;"><svg id="hide-email-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Email</button>
         <span id="me-role-badge" class="role-badge" style="display:none"></span>
         <span class="me-tag" id="me-tag">—</span>
@@ -616,7 +617,7 @@
 <!-- Owner password modal -->
 <div class="modal-overlay" id="pw-modal">
   <div class="modal">
-    <h3>🔐 Owner Verification</h3>
+    <h3><i class="fa-solid fa-key"></i> Owner Verification</h3>
     <p>Enter your owner password to continue.</p>
     <input id="pw-input" type="password" placeholder="Password">
     <div class="modal-btns">
@@ -629,7 +630,7 @@
 <!-- Ban modal -->
 <div class="modal-overlay" id="ban-modal">
   <div class="modal">
-    <h3>🚫 Ban from Chat</h3>
+    <h3><i class="fa-solid fa-ban"></i> Ban from Chat</h3>
     <p id="ban-target-label">Banning user</p>
     <input id="ban-reason" type="text" placeholder="Reason">
     <div class="modal-btns">
@@ -835,6 +836,10 @@ socket.on('users_update', (users) => {
 });
 
 // ── Mod ───────────────────────────────────────────────────────────────────────
+function deleteMsg(msgId) {
+  socket.emit('delete_message', msgId);
+}
+
 function clearChat() {
   if (!confirm('Clear ALL chat history? This cannot be undone.')) return;
   socket.emit('clear_chat');
@@ -888,8 +893,8 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
     <p style="font-size:11px;color:var(--muted);margin-bottom:16px;">AES-256 encryption — nothing leaves your browser</p>
 
     <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-      <button id="cipher-tab-enc" onclick="cipherTab('enc')" style="flex:1;padding:9px;background:var(--accent);color:#1a1008;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">🔒 Encrypt</button>
-      <button id="cipher-tab-dec" onclick="cipherTab('dec')" style="flex:1;padding:9px;background:none;color:var(--muted);border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">🔓 Decrypt</button>
+      <button id="cipher-tab-enc" onclick="cipherTab('enc')" style="flex:1;padding:9px;background:var(--accent);color:#1a1008;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;display:inline-flex;align-items:center;justify-content:center;gap:5px;"><i class="fa-solid fa-lock"></i> Encrypt</button>
+      <button id="cipher-tab-dec" onclick="cipherTab('dec')" style="flex:1;padding:9px;background:none;color:var(--muted);border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;display:inline-flex;align-items:center;justify-content:center;gap:5px;"><i class="fa-solid fa-lock-open"></i> Decrypt</button>
     </div>
 
     <div id="cipher-enc-panel">
@@ -975,7 +980,7 @@ async function cipherDecrypt() {
     document.getElementById('cipher-dec-result').textContent = new TextDecoder().decode(plain);
     document.getElementById('cipher-dec-out').style.display = 'block';
   } catch(e) {
-    errEl.textContent = '❌ Wrong password or corrupted message.';
+    errEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Wrong password or corrupted message.';
     errEl.style.display = 'block';
   }
 }
