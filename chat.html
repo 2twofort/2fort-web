@@ -400,6 +400,22 @@
   #users-list::-webkit-scrollbar { width: 3px; }
   #users-list::-webkit-scrollbar-thumb { background: var(--border); }
 
+  /* ── Responsive ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    :root { --users: 140px; }
+    #header { padding: 0 10px; gap: 6px; }
+    #messages { padding: 10px 12px; }
+    #input-area { padding: 8px 12px 12px; }
+    .msg-avatar, .msg-avatar img { width: 28px; height: 28px; }
+    .msg-content { font-size: 12px; }
+    .msg-author { font-size: 12px; }
+    .pane-header { padding: 0 10px; }
+  }
+
+  @media (max-width: 540px) {
+    #users-panel { display: none; }
+  }
+
   .user-item {
     padding: 6px 8px;
     border-radius: 6px;
@@ -575,6 +591,7 @@
       <div class="spacer"></div>
       <div class="me-info">
         <button onclick="openModal('cipher-modal')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🔒 Cipher</button>
+        <button id="clear-chat-btn" onclick="clearChat()" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🗑 Clear</button>
         <button id="hide-email-btn" onclick="toggleHideEmail()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;display:inline-flex;align-items:center;gap:4px;"><svg id="hide-email-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Email</button>
         <span id="me-role-badge" class="role-badge" style="display:none"></span>
         <span class="me-tag" id="me-tag">—</span>
@@ -692,6 +709,10 @@ socket.on('auth_ok', (data) => {
     badge.textContent = me.role;
     badge.className = `role-badge role-${me.role}`;
     badge.style.display = 'inline';
+  }
+
+  if (me.role === 'owner') {
+    document.getElementById('clear-chat-btn').style.display = 'inline-flex';
   }
 
   // Load history
@@ -814,9 +835,14 @@ socket.on('users_update', (users) => {
 });
 
 // ── Mod ───────────────────────────────────────────────────────────────────────
-function deleteMsg(msgId) {
-  socket.emit('delete_message', msgId);
+function clearChat() {
+  if (!confirm('Clear ALL chat history? This cannot be undone.')) return;
+  socket.emit('clear_chat');
 }
+
+socket.on('chat_cleared', () => {
+  document.getElementById('messages').innerHTML = '';
+});
 
 function openBanModal(discordId, tag) {
   banTargetId = discordId;
